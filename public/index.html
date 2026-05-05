@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GMS FamPay API</title>
+  <style>
+    body { font-family: Arial; background: #111; color: #0f0; margin:0; padding:20px; }
+    .container { max-width: 800px; margin: auto; }
+    input, button { padding: 12px; margin: 8px 0; width: 100%; border-radius: 5px; font-size: 16px; }
+    button { background: #0f0; color: black; font-weight: bold; cursor: pointer; }
+    pre { background: #222; padding: 15px; overflow: auto; border-radius: 5px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🔥 GMS FamPay API</h1>
+
+  <div id="setup">
+    <h2>Setup Your API</h2>
+    <input type="email" id="gmail" placeholder="Gmail Address"><br>
+    <input type="password" id="appPass" placeholder="Gmail App Password"><br>
+    <input type="text" id="upi" placeholder="Your UPI ID"><br>
+    <button onclick="createAPI()">Create API Key (Free)</button>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+    <h2>✅ API Ready</h2>
+    <p><strong>API Key:</strong> <span id="apiKeyDisplay"></span></p>
+    <p><strong>UPI:</strong> <span id="upiDisplay"></span></p>
+
+    <h3>Generate QR</h3>
+    <input type="number" id="amount" value="10">
+    <button onclick="genQR()">Generate QR</button>
+    <pre id="qrRes"></pre>
+
+    <h3>Verify Payment</h3>
+    <input type="text" id="orderId" placeholder="Order ID">
+    <button onclick="verifyPay()">Verify</button>
+    <pre id="verifyRes"></pre>
+  </div>
+</div>
+
+<script>
+let currentApiKey = "";
+
+async function createAPI() {
+  const gmail = document.getElementById('gmail').value.trim();
+  const appPass = document.getElementById('appPass').value.trim();
+  const upi = document.getElementById('upi').value.trim();
+
+  if (!gmail || !appPass || !upi) return alert("All fields required");
+
+  const res = await fetch('/create-api', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({gmail, appPass, upi})
+  });
+  const data = await res.json();
+
+  if (data.status === "success") {
+    currentApiKey = data.apiKey;
+    document.getElementById('apiKeyDisplay').textContent = data.apiKey;
+    document.getElementById('upiDisplay').textContent = upi;
+    document.getElementById('setup').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+  } else {
+    alert(data.message);
+  }
+}
+
+async function genQR() {
+  const amount = document.getElementById('amount').value;
+  const res = await fetch(`/api/qr?api=${currentApiKey}&amount=${amount}`);
+  const data = await res.json();
+  document.getElementById('qrRes').textContent = JSON.stringify(data, null, 2);
+  if (data.data) document.getElementById('orderId').value = data.data.order_id;
+}
+
+async function verifyPay() {
+  const orderId = document.getElementById('orderId').value;
+  const res = await fetch(`/api/verify?api_key=${currentApiKey}&order_id=${orderId}`);
+  const data = await res.json();
+  document.getElementById('verifyRes').textContent = JSON.stringify(data, null, 2);
+}
+</script>
+</body>
+</html>
