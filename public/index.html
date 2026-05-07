@@ -5,10 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GMS FamPay API</title>
   <style>
-    body { font-family: Arial; background: #111; color: #0f0; margin:0; padding:20px; }
-    .container { max-width: 800px; margin: auto; }
-    input, button { padding: 12px; margin: 8px 0; width: 100%; border-radius: 5px; font-size: 16px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('https://files.catbox.moe/ktx8og.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #0f0;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: -1;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      border: 1px solid #0f0;
+    }
+    h1 { color: #00ff00; text-shadow: 0 0 10px #0f0; }
+    input, button {
+      padding: 12px;
+      margin: 8px 0;
+      width: 100%;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    input { background: rgba(255,255,255,0.1); color: white; }
     button { background: #0f0; color: black; font-weight: bold; cursor: pointer; }
+    button:hover { background: #00cc00; }
+    .help-btn { background: #444; color: white; }
+    .telegram-btn { background: #229ED9; color: white; }
     pre { background: #222; padding: 15px; overflow: auto; border-radius: 5px; }
   </style>
 </head>
@@ -22,6 +56,8 @@
     <input type="password" id="appPass" placeholder="Gmail App Password"><br>
     <input type="text" id="upi" placeholder="Your UPI ID"><br>
     <button onclick="createAPI()">Create API Key (Free)</button>
+    <button class="help-btn" onclick="showAppPasswordHelp()">How to get Google App Password?</button>
+    <button class="telegram-btn" onclick="window.open('https://t.me/+1NRRqUd1replNTM1', '_blank')">Join GMS Network</button>
   </div>
 
   <div id="dashboard" style="display:none;">
@@ -48,16 +84,15 @@ async function createAPI() {
   const gmail = document.getElementById('gmail').value.trim();
   const appPass = document.getElementById('appPass').value.trim();
   const upi = document.getElementById('upi').value.trim();
-
   if (!gmail || !appPass || !upi) return alert("All fields required");
-
+  
   const res = await fetch('/create-api', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({gmail, appPass, upi})
   });
   const data = await res.json();
-
+  
   if (data.status === "success") {
     currentApiKey = data.apiKey;
     document.getElementById('apiKeyDisplay').textContent = data.apiKey;
@@ -82,6 +117,10 @@ async function verifyPay() {
   const res = await fetch(`/api/verify?api_key=${currentApiKey}&order_id=${orderId}`);
   const data = await res.json();
   document.getElementById('verifyRes').textContent = JSON.stringify(data, null, 2);
+}
+
+function showAppPasswordHelp() {
+  alert("🔑 How to Get Google App Password:\n\n1. Go to myaccount.google.com\n2. Search 'App Passwords'\n3. Select Mail → Other\n4. Generate & Copy 16 character password");
 }
 </script>
 </body>
