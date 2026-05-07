@@ -72,18 +72,29 @@ app.get('/api/qr', (req, res) => {
   res.json(response);
 });
 
-// ====================== QR IMAGE ======================
+// ====================== QR IMAGE (Better Design) ======================
 app.get('/qr/:orderId.png', (req, res) => {
   const orderId = req.params.orderId;
   res.setHeader('Content-Type', 'image/svg+xml');
   res.send(`
-    <svg width="300" height="320" xmlns="http://www.w3.org/2000/svg">
-      <rect width="300" height="320" fill="#111"/>
-      <text x="150" y="80" font-size="22" text-anchor="middle" fill="#0f0">🔥 GMS PAY</text>
-      <rect x="40" y="110" width="220" height="220" fill="#fff"/>
-      <text x="150" y="170" font-size="18" text-anchor="middle" fill="#000">SCAN TO PAY</text>
-      <text x="150" y="200" font-size="14" text-anchor="middle" fill="#000">${orderId}</text>
-      <text x="150" y="290" font-size="16" text-anchor="middle" fill="#0f0">Powered by GMS</text>
+    <svg width="400" height="420" viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="420" fill="#0a0a0a"/>
+      
+      <!-- Header -->
+      <text x="200" y="60" font-size="28" text-anchor="middle" fill="#00ff00" font-weight="bold">🔥 GMS PAY</text>
+      
+      <!-- White Box -->
+      <rect x="50" y="90" width="300" height="260" rx="15" fill="#ffffff"/>
+      
+      <!-- Main Text -->
+      <text x="200" y="140" font-size="22" text-anchor="middle" fill="#000" font-weight="bold">SCAN TO PAY</text>
+      <text x="200" y="175" font-size="15" text-anchor="middle" fill="#000">${orderId}</text>
+      
+      <!-- Decorative -->
+      <rect x="80" y="200" width="240" height="8" fill="#00ff00"/>
+      
+      <!-- Footer -->
+      <text x="200" y="380" font-size="16" text-anchor="middle" fill="#00ff00">Powered by GMS</text>
     </svg>
   `);
 });
